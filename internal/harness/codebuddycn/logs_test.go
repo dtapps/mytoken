@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/nerv-base/mytoken/internal/harness"
 )
@@ -219,5 +220,54 @@ func TestParseLogCRLF(t *testing.T) {
 	}
 	if batch.Events[0].Model != "hy4free" {
 		t.Errorf("model = %q, want hy4free", batch.Events[0].Model)
+	}
+}
+
+// TestParseLogIgnoresReportingZone pins the wall-clock contract: the line
+// carries no zone, so it is read in the zone the process started in — never in
+// the reporting zone a switch writes into time.Local.
+func TestParseLogIgnoresReportingZone(t *testing.T) {
+	shifted := time.FixedZone("shifted", 5*3600)
+	old := time.Local
+	time.Local = shifted
+	t.Cleanup(func() { time.Local = old })
+	if harness.IngestZone().String() == shifted.String() {
+		t.Skip("the process zone coincides with the override")
+	}
+
+	dir := t.TempDir()
+	path := writeLog(t, dir, "app.log", appLine)
+	batch, err := NewWithRoots(dir).Parse(context.Background(), srcOf(path), cursor{})
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(batch.Events) != 1 {
+		t.Fatalf("events = %d, want 1", len(batch.Events))
+	}
+	want := time.Date(2026, 11, 6, 22, 38, 36, 930e6, harness.IngestZone()).UTC()
+	if got := batch.Events[0].Timestamp; !got.Equal(want) {
+		t.Errorf("timestamp = %s, want %s (ingest zone %s)", got.UTC(), want, harness.IngestZone())
+	}
+	if followed := time.Date(2026, 11, 6, 22, 38, 36, 930e6, shifted).UTC(); batch.Events[0].Timestamp.Equal(followed) {
+		t.Errorf("timestamp followed the shifted time.Local (%s)", followed)
+	}
+}
+
+// TestParseLogUnpaddedAppTime checks a one-digit date still parses instead of
+// silently falling back to the file's mtime.
+func TestParseLogUnpaddedAppTime(t *testing.T) {
+	dir := t.TempDir()
+	body := `2026-11-6 9:8:7.930 [info] [AgentReporter] [abc] Agent execution successful with usage: {"inputTokens":10,"outputTokens":5,"cachedMissTokens":10}` + "\n"
+	path := writeLog(t, dir, "app.log", body)
+	batch, err := NewWithRoots(dir).Parse(context.Background(), srcOf(path), cursor{})
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(batch.Events) != 1 {
+		t.Fatalf("events = %d, want 1", len(batch.Events))
+	}
+	got := batch.Events[0].Timestamp.In(harness.IngestZone())
+	if got.Year() != 2026 || got.Month() != 11 || got.Day() != 6 || got.Hour() != 9 || got.Minute() != 8 || got.Second() != 7 {
+		t.Errorf("timestamp = %s, want 2026-11-06 09:08:07 in the ingest zone", got)
 	}
 }

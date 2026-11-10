@@ -31,10 +31,15 @@ const (
 	workspaceMark = "Workspace Path:"
 )
 
-// Log timestamps are local wall-clock with milliseconds: the app writes
+// Log timestamps are wall-clock with milliseconds and no zone: the app writes
 // "2006-01-02 15:04:05.000", the extension log writes "[2006/1/2 15:04:05.000]".
+// They are read in harness.IngestZone (the zone the process started in), never
+// in time.Local, which a reporting-zone switch rewrites.
+//
+// Padded and unpadded components are both accepted: a format change on the
+// writer's side must not silently fall back to the file's mtime.
 var (
-	appTime  = regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})`)
+	appTime  = regexp.MustCompile(`^(\d{4})-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})\.(\d{3})`)
 	extTime  = regexp.MustCompile(`^\[?(\d{4})/(\d{1,2})/(\d{1,2}) (\d{1,2}):(\d{2}):(\d{2})\.(\d{3})\]?`)
 	agentTag = regexp.MustCompile(`^\[([A-Za-z0-9_-]+)\]`)
 )
@@ -316,6 +321,10 @@ func numberFrom(usage map[string]any, keys ...string) (int64, bool) {
 
 // logTimestamp reads the leading wall-clock stamp; mtime is the fallback for a
 // line the tool wrote without one.
+//
+// The zone is harness.IngestZone, not time.Local: a reporting-zone override
+// rewrites time.Local, and a request written at 09:00 must not be stored as
+// 01:00 because the user asked to see UTC days.
 func logTimestamp(line string, mtime time.Time) time.Time {
 	for _, re := range []*regexp.Regexp{appTime, extTime} {
 		if m := re.FindStringSubmatch(line); m != nil {
@@ -326,7 +335,7 @@ func logTimestamp(line string, mtime time.Time) time.Time {
 			mi, _ := strconv.Atoi(m[5])
 			se, _ := strconv.Atoi(m[6])
 			ms, _ := strconv.Atoi(m[7])
-			return time.Date(y, time.Month(mo), d, h, mi, se, ms*1e6, time.Local)
+			return time.Date(y, time.Month(mo), d, h, mi, se, ms*1e6, harness.IngestZone())
 		}
 	}
 	return mtime
