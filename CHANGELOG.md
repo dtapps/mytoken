@@ -3,6 +3,17 @@
 The section of each version is also what the app's update window shows, so
 every release needs one here (`## 0.2.1`), written for the people updating.
 
+## 0.5.9
+
+- **切换报告时区不会再挪动已经记录的请求时间。** 界面按你选的时区划分每天和每月，
+  而应用这个选择会改写进程的本地时区。CodeBuddy CN 的日志写的是不带时区的墙上时间，
+  之前正是按这个被改写过的时区去读——一旦你切到 UTC，早上 09:00 的请求会被存成 01:00；
+  又因为去重键不含时间戳，重新扫描也修不回来。现在日志时间一律按「应用启动时机器所在的
+  时区」解读，报告时区只决定每天、每月怎么分桶。已经被存歪的请求不会自动纠正，需要到
+  「设置 → 数据 → 重建索引」重读一遍。
+- **CodeBuddy CN 日志里不补零的时间也能解析。** 形如 `2026-11-6 9:8:7.930` 的行以前会
+  回退到文件的修改时间，请求时间因此被静默挪动几个小时。
+
 ## 0.5.8
 
 This is a fork release: it ships the CodeBuddy CN reader ahead of the upstream
