@@ -1,14 +1,14 @@
 {
   "name": "mytoken",
   "identifier": "dev.zzstar.mytoken",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "copyright": "© 2026 zzstar101",
   "icon": "resources/icon.png",
   "main": ".",
   "out": "build",
   "updates": {
-    "publicKey": "my7Qm3yAQkDnUQe1FQ2t+eV6IGxct+WzjpsyA6s+OmI=",
-    "github": "nerv-base/mytoken"
+    "publicKey": "QJW/bWug24Jibv4hJUi4aKXwkSJ5KpsYNOL0j8X2CEY=",
+    "github": "dtapps/mytoken"
   },
   "macos": {
     "dmgTitle": "MyToken!!!!!",

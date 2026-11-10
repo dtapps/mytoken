@@ -3,6 +3,19 @@
 The section of each version is also what the app's update window shows, so
 every release needs one here (`## 0.2.1`), written for the people updating.
 
+## 0.5.8
+
+This is a fork release: it ships the CodeBuddy CN reader ahead of the upstream
+pull request, which is still open.
+
+- **CodeBuddy CN（国内版）的用量有数了。** 桌面版不在本地存 token 数，而是把每次
+  请求写进纯文本日志；现在读取这些日志，显示 token、缓存命中率和该工具自己扣的
+  credit。macOS 与 Windows 的日志位置已在真实安装上核实，Linux 位置按同一套约定
+  推断、尚未实测。
+- CLI 会话（`~/.codebuddycn/projects`）也会一起读，记录格式与国际版相同。
+- `credit` 按工具自己的单位保留，不折算成人民币或美元；`hy4free`、`hy3` 这类不在
+  价格目录里的模型显示为 *unpriced*，这是预期行为。
+
 ## 0.5.7
 
 - **The Codex subagent sessions 0.5.6 promised are actually there now.** 0.5.6
