@@ -4,13 +4,15 @@
 
 <h1 align="center">MyToken!!!!!</h1>
 
+<p align="center"><b>Fork of <a href="https://github.com/nerv-base/mytoken">nerv-base/mytoken</a>.</b> Releases here are built from the <code>dev</code> branch and ship CodeBuddy CN support ahead of the upstream pull request.</p>
+
 <p align="center">
-  <a href="https://github.com/nerv-base/mytoken/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/nerv-base/mytoken?style=flat-square&color=5AA9D6&label=release"></a>
-  <a href="https://github.com/nerv-base/mytoken/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/nerv-base/mytoken/ci.yml?branch=main&style=flat-square&label=CI"></a>
-  <a href="https://github.com/nerv-base/mytoken/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/nerv-base/mytoken/total?style=flat-square&color=FF7896"></a>
+  <a href="https://github.com/dtapps/mytoken/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/dtapps/mytoken?style=flat-square&color=5AA9D6&label=release"></a>
+  <a href="https://github.com/dtapps/mytoken/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/dtapps/mytoken/ci.yml?branch=dev&style=flat-square&label=CI"></a>
+  <a href="https://github.com/dtapps/mytoken/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/dtapps/mytoken/total?style=flat-square&color=FF7896"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-50C878?style=flat-square">
-  <a href="go.mod"><img alt="Go" src="https://img.shields.io/github/go-mod/go-version/nerv-base/mytoken?style=flat-square&color=F0B43C"></a>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/nerv-base/mytoken?style=flat-square&color=7C6CD4"></a>
+  <a href="go.mod"><img alt="Go" src="https://img.shields.io/github/go-mod/go-version/dtapps/mytoken?style=flat-square&color=F0B43C"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/dtapps/mytoken?style=flat-square&color=7C6CD4"></a>
   <a href="https://github.com/egoist/mygo"><img alt="Built with MyGo" src="https://img.shields.io/badge/built%20with-MyGo-5AA9D6?style=flat-square&labelColor=2B2640"></a>
   <a href="https://awesomemygo.dev/apps/mytoken"><img alt="Listed on Awesome MyGo" src="https://awesomemygo.dev/badge.svg"></a>
 </p>
@@ -68,7 +70,7 @@ machine.
 
 ### macOS (disk image)
 
-Download `mytoken-<version>-darwin-universal.dmg` from [Releases](https://github.com/nerv-base/mytoken/releases), open it and drag **MyToken!!!!!**
+Download `mytoken-<version>-darwin-universal.dmg` from [Releases](https://github.com/dtapps/mytoken/releases), open it and drag **MyToken!!!!!**
 into *Applications*. The bundle is ad-hoc signed rather than notarized, so the first launch needs
 right-click → *Open* (or `xattr -dr com.apple.quarantine /Applications/mytoken.app`). The app's file
 name is `mytoken.app`; Finder and the menu bar show `MyToken!!!!!`.
@@ -82,9 +84,9 @@ uninstaller.
 ### Linux (install script)
 
 ```sh
-v=0.5.2 arch=amd64   # or arm64
-curl -fLO https://github.com/nerv-base/mytoken/releases/download/v$v/mytoken-$v-linux-$arch.tar.gz
-curl -fLO https://github.com/nerv-base/mytoken/releases/download/v$v/install.sh
+v=0.5.8 arch=amd64   # or arm64
+curl -fLO https://github.com/dtapps/mytoken/releases/download/v$v/mytoken-$v-linux-$arch.tar.gz
+curl -fLO https://github.com/dtapps/mytoken/releases/download/v$v/install.sh
 sh install.sh mytoken-$v-linux-$arch.tar.gz
 ```
 
@@ -108,9 +110,10 @@ go install github.com/nerv-base/mytoken@latest
 ```
 
 Builds the same binary the bundles carry, including the CLI, into `$(go env GOPATH)/bin/mytoken`.
-This needs the first release cut after the move to `github.com/nerv-base/mytoken` (v0.6.0 or
-later); earlier tags still install through the old path, which GitHub redirects:
-`go install github.com/zzstar101/mytoken@v0.5.7`.
+
+This fork keeps the upstream module path so its changes can be merged back, which means the
+command above installs the upstream module, not this fork's build. Download a bundle from
+[this repository's releases](https://github.com/dtapps/mytoken/releases) to get the fork's version.
 
 ## Supported tools
 
