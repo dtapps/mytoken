@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -54,7 +55,9 @@ func TestSourceKeyLivesOutsideTheIndex(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if perm := st.Mode().Perm(); perm != 0o600 {
+	// Windows has no POSIX permission bits: Go reports 0666 for a writable
+	// file there, and Chmod can only toggle the read-only attribute.
+	if perm := st.Mode().Perm(); runtime.GOOS != "windows" && perm != 0o600 {
 		t.Fatalf("key file mode = %o, want 600", perm)
 	}
 	var n int
