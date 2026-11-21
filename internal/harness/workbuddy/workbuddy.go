@@ -556,10 +556,7 @@ func mapTokens(u *messageUsage, pd *providerData) model.Tokens {
 		if raw.CompletionTokens > 0 {
 			out = raw.CompletionTokens
 		}
-		read = max(raw.PromptCacheHitTokens, raw.CacheReadInputTokens)
-		if raw.CachedTokens > read {
-			read = raw.CachedTokens
-		}
+		read = max(raw.CachedTokens, max(raw.PromptCacheHitTokens, raw.CacheReadInputTokens))
 		write = max(raw.PromptCacheWriteTokens, raw.CacheCreationInputTokens)
 		reasoning = raw.CompletionThinkingTokens
 	}

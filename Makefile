@@ -55,6 +55,9 @@ vet:
 fmt:
 	$(GO) fmt ./...
 
+fix:
+	$(GO) fix ./...
+
 fmt-check:
 	@unformatted="$$(gofmt -l .)"; \
 	if [ -n "$$unformatted" ]; then \

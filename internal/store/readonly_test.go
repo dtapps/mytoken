@@ -215,7 +215,7 @@ func roApplicationState(t *testing.T, db *sql.DB) string {
 func roDiffOffsets(before, after []byte) []int {
 	var out []int
 	n := min(len(after), len(before))
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if before[i] != after[i] {
 			out = append(out, i)
 		}

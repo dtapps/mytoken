@@ -579,11 +579,8 @@ func (s *Scanner) scanMode(ctx context.Context, mode scanMode, hints []string) (
 	}
 	results := make(chan result, s.workers+1)
 	var wg sync.WaitGroup
-	n := max(s.workers, 1)
-	if n > len(work) {
-		n = len(work)
-	}
-	for i := 0; i < n; i++ {
+	n := min(max(s.workers, 1), len(work))
+	for range n {
 		wg.Go(func() {
 			for item := range ch {
 				if ctx.Err() != nil {

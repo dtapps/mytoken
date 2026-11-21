@@ -696,8 +696,8 @@ func readTaskMetadata(path string) (modelName, providerID string) {
 	// model_usage is append-ordered; the last entry is the model in use when
 	// the task was last written.
 	for _, v := range slices.Backward(meta.ModelUsage) {
-		if v := strings.TrimSpace(v.ModelID); v != "" {
-			modelName = v
+		if id := strings.TrimSpace(v.ModelID); id != "" {
+			modelName = id
 			providerID = strings.TrimSpace(v.ModelProviderID)
 			break
 		}
