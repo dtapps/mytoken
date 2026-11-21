@@ -97,7 +97,11 @@ func (s *Store) normalizeProjects(ctx context.Context) error {
 	// events in a few hundred rows; grouping the events view costs a scan of
 	// every event, and this runs after each scan that wrote anything. A
 	// pair no event uses any more is left out: it would never update.
-	rows, err := s.db.QueryContext(ctx, "SELECT raw_project,project FROM event_dimensions d WHERE EXISTS (SELECT 1 FROM event_data e WHERE e.dimension_id=d.id) GROUP BY raw_project,project UNION SELECT raw_project,project FROM sessions GROUP BY raw_project,project")
+	// Drive the join from event_data: dimension_id is covered by the
+	// primary key of event_dimensions, so this stays O(events) even while
+	// DeferEmptyIndexes has dropped the secondary indexes on event_data.
+	// A correlated EXISTS here would rescan every fact for each dimension.
+	rows, err := s.db.QueryContext(ctx, "SELECT DISTINCT d.raw_project,d.project FROM event_data e JOIN event_dimensions d ON d.id=e.dimension_id UNION SELECT raw_project,project FROM sessions")
 	if err != nil {
 		return err
 	}
