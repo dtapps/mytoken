@@ -529,8 +529,8 @@ func trayIcon() []byte {
 	c := float64(n) / 2
 	cover := func(d float64) float64 { return math.Max(0, math.Min(1, 0.5-d)) }
 	const ringR, ringW, dotR = 14.0, 3.6, 7.0
-	for y := 0; y < n; y++ {
-		for x := 0; x < n; x++ {
+	for y := range n {
+		for x := range n {
 			dx, dy := float64(x)+0.5-c, float64(y)+0.5-c
 			r := math.Hypot(dx, dy)
 			// The ring runs clockwise from the top for 0.72 of a turn,

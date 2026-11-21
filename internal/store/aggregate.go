@@ -82,7 +82,7 @@ func dimExpr(prefix, dim string) string {
 // dimension list declares, so it stays aligned with the table's primary key.
 func dimValues(prefix, dims string, overrides map[string]string) []string {
 	var out []string
-	for _, d := range strings.Split(dims, ",") {
+	for d := range strings.SplitSeq(dims, ",") {
 		if v, ok := overrides[d]; ok {
 			out = append(out, v)
 			continue
@@ -96,7 +96,7 @@ func dimValues(prefix, dims string, overrides map[string]string) []string {
 // from the events view: unqualified columns, `day` derived from timestamp.
 func bareDimList(dims string, overrides map[string]string) string {
 	var out []string
-	for _, d := range strings.Split(dims, ",") {
+	for d := range strings.SplitSeq(dims, ",") {
 		if v, ok := overrides[d]; ok {
 			out = append(out, v)
 			continue
@@ -115,7 +115,7 @@ func bareDimList(dims string, overrides map[string]string) string {
 // miss_cause) and the joined event_dimensions row for every dimension.
 func subqueryDimList(prefix, dims string, fromFact map[string]string) string {
 	var out []string
-	for _, d := range strings.Split(dims, ",") {
+	for d := range strings.SplitSeq(dims, ",") {
 		if v, ok := fromFact[d]; ok {
 			out = append(out, v)
 			continue
@@ -141,7 +141,7 @@ func groupByPositions(dims string) string {
 // dimensions. Every dimension except `day` is a TEXT key.
 func dimColumnDecls(dims string) string {
 	var out []string
-	for _, d := range strings.Split(dims, ",") {
+	for d := range strings.SplitSeq(dims, ",") {
 		if d == "day" {
 			out = append(out, "day INTEGER NOT NULL")
 			continue
@@ -181,7 +181,7 @@ func dailyRollupInsert(dims string) string {
 // rewritten to the joined dictionary row so nothing is stored twice.
 func rollupTriggerChange(table, dims, metrics, dimensionColumns string, values func(string) string, prefix string, subtract bool) string {
 	var add, sub []string
-	for _, col := range strings.Split(metrics, ",") {
+	for col := range strings.SplitSeq(metrics, ",") {
 		add = append(add, col+"="+table+"."+col+"+excluded."+col)
 		sub = append(sub, col+"="+table+"."+col+"-excluded."+col)
 	}
@@ -190,7 +190,7 @@ func rollupTriggerChange(table, dims, metrics, dimensionColumns string, values f
 		updates = sub
 	}
 	v := values(prefix)
-	for _, col := range strings.Split(dimensionColumns, ",") {
+	for col := range strings.SplitSeq(dimensionColumns, ",") {
 		v = strings.ReplaceAll(v, prefix+"."+col, "d."+col)
 	}
 	return "INSERT INTO " + table + "(" + dims + "," + metrics + ") SELECT " + v + " FROM event_dimensions d WHERE d.id=" + prefix + ".dimension_id ON CONFLICT(" + dims + ") DO UPDATE SET " + strings.Join(updates, ",") + ";"

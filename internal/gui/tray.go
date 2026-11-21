@@ -290,7 +290,7 @@ func trayItems(v string) []string {
 	}
 	var out []string
 	for _, it := range trayTitleItems {
-		for _, p := range strings.Split(v, ",") {
+		for p := range strings.SplitSeq(v, ",") {
 			if p == it {
 				out = append(out, it)
 			}

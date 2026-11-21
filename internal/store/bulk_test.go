@@ -29,7 +29,7 @@ func TestDeferredIndexesRestoreAfterCancellation(t *testing.T) {
 	}
 	count(0)
 	batch := harness.Batch{Events: []model.UsageEvent{{SessionID: "s", DedupKey: "request", Tokens: model.Tokens{Input: 10}}}}
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		if err := st.Commit(ctx, model.Codex, "source", batch, nil); err != nil {
 			t.Fatal(err)
 		}

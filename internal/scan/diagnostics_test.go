@@ -644,7 +644,7 @@ func TestDiagnosticsBoundsPersistedSources(t *testing.T) {
 
 	const total = 200
 	srcs := make([]harness.Source, 0, total)
-	for i := 0; i < total; i++ {
+	for i := range total {
 		srcs = append(srcs, harness.Source{Path: fmt.Sprintf("/known/location/session-%04d.jsonl", i), Kind: "jsonl"})
 	}
 	p := diagParser{

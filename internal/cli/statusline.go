@@ -130,14 +130,15 @@ func planQuotaText(st snapshot.Status, plans []snapshot.PlanQuota) string {
 	}
 	parts := make([]string, 0, len(plans))
 	for _, p := range plans {
-		part := p.Provider
+		var part strings.Builder
+		part.WriteString(p.Provider)
 		if label := plan.PlanLabel(p.Plan); label != "" {
-			part += " " + label
+			part.WriteString(" " + label)
 		}
 		for _, w := range p.Windows {
-			part += " " + compactPlanWindow(w)
+			part.WriteString(" " + compactPlanWindow(w))
 		}
-		parts = append(parts, part)
+		parts = append(parts, part.String())
 	}
 	return strings.Join(parts, "; ")
 }

@@ -83,7 +83,7 @@ func NormalizeEndpoint(raw string) (string, bool) {
 		host = "[" + host + "]"
 	}
 	path := u.EscapedPath()
-	for _, segment := range strings.Split(u.Path, "/") {
+	for segment := range strings.SplitSeq(u.Path, "/") {
 		if segment == "." || segment == ".." {
 			return "", false
 		}

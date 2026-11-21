@@ -58,7 +58,7 @@ func (p *rateParser) Parse(_ context.Context, src harness.Source, cur harness.Cu
 		start = int64(len(raw))
 	}
 	b := harness.Batch{Next: harness.Cursor{Offset: int64(len(raw)), Size: int64(len(raw))}}
-	for _, line := range strings.Split(string(raw[start:]), "\n") {
+	for line := range strings.SplitSeq(string(raw[start:]), "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
@@ -186,7 +186,7 @@ func TestIngestRateBackfillNeverReportsLive(t *testing.T) {
 	writeRateLog(t, root, "a:100")
 	sc, st, clk := newRateScanner(t, &rateParser{root: root})
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		if err := sc.Scan(ctx); err != nil {
 			t.Fatal(err)
 		}

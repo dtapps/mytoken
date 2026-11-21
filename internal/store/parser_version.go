@@ -108,10 +108,7 @@ func (s *Store) ResetHarness(ctx context.Context, h model.Harness, version int, 
 	}
 	defer tx.Rollback()
 	for start := 0; start < len(scope.Sessions); start += resetChunk {
-		end := start + resetChunk
-		if end > len(scope.Sessions) {
-			end = len(scope.Sessions)
-		}
+		end := min(start+resetChunk, len(scope.Sessions))
 		chunk := scope.Sessions[start:end]
 		args := make([]any, 0, 2+len(chunk))
 		args = append(args, string(h), string(h))
@@ -132,10 +129,7 @@ func (s *Store) ResetHarness(ctx context.Context, h model.Harness, version int, 
 		return err
 	}
 	for start := 0; start < len(scope.Paths); start += resetChunk {
-		end := start + resetChunk
-		if end > len(scope.Paths) {
-			end = len(scope.Paths)
-		}
+		end := min(start+resetChunk, len(scope.Paths))
 		chunk := scope.Paths[start:end]
 		args := make([]any, 0, 1+len(chunk))
 		args = append(args, string(h))

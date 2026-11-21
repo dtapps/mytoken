@@ -43,7 +43,7 @@ func encryptAuth(t *testing.T, password, token, expires string) []byte {
 		t.Fatal(err)
 	}
 	pad := aes.BlockSize - len(plain)%aes.BlockSize
-	for i := 0; i < pad; i++ {
+	for range pad {
 		plain = append(plain, byte(pad))
 	}
 	ciphertext := make([]byte, len(plain))

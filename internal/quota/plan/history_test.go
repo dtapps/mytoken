@@ -136,7 +136,7 @@ func TestBalanceHistoryMemoryWithoutStore(t *testing.T) {
 func TestBalanceHistoryKeepsThirtyDays(t *testing.T) {
 	h := newHistoryHarness(t, nil)
 	start := h.now
-	for i := 0; i < 35; i++ {
+	for i := range 35 {
 		h.now = start.AddDate(0, 0, i)
 		h.bal = 100 - float64(i)
 		h.refresh(t)

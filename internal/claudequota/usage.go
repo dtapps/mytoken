@@ -97,8 +97,8 @@ func parseUsage(raw []byte) ([]plan.Window, error) {
 
 // windowName turns an unknown payload key into a display label.
 func windowName(key string) string {
-	if strings.HasPrefix(key, "seven_day_") {
-		return "week-" + strings.ReplaceAll(strings.TrimPrefix(key, "seven_day_"), "_", "-")
+	if after, ok := strings.CutPrefix(key, "seven_day_"); ok {
+		return "week-" + strings.ReplaceAll(after, "_", "-")
 	}
 	return strings.ReplaceAll(key, "_", "-")
 }

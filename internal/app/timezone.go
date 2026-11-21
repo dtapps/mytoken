@@ -61,8 +61,8 @@ func DefaultStatsTimezone() string {
 		}
 	}
 	if target, err := filepath.EvalSymlinks("/etc/localtime"); err == nil {
-		if i := strings.Index(target, "zoneinfo/"); i >= 0 {
-			name := strings.TrimPrefix(target[i+len("zoneinfo/"):], "posix/")
+		if _, after, ok := strings.Cut(target, "zoneinfo/"); ok {
+			name := strings.TrimPrefix(after, "posix/")
 			if name != "" && name != "posixrules" {
 				if n, ok := IANAZoneName(name); ok {
 					return n

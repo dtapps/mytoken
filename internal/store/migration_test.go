@@ -18,7 +18,7 @@ func TestPricedMigration(t *testing.T) {
 		t.Fatal(err)
 	}
 	db.Close()
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		st, err := Open(path)
 		if err != nil {
 			t.Fatal(err)

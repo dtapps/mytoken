@@ -152,7 +152,7 @@ func TestParallelParsing(t *testing.T) {
 	defer cancel()
 	result := make(chan error, 1)
 	go func() { result <- sc.Scan(ctx) }()
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		select {
 		case <-p.entered:
 		case <-ctx.Done():

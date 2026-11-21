@@ -405,10 +405,7 @@ func grow(t testing.TB, c Case, dir string, step int) error {
 			return err
 		}
 		chunks := splitLines(lines)
-		take := (len(chunks)*(step+1) + c.Steps - 1) / c.Steps
-		if take > len(chunks) {
-			take = len(chunks)
-		}
+		take := min((len(chunks)*(step+1)+c.Steps-1)/c.Steps, len(chunks))
 		var buf bytes.Buffer
 		for _, chunk := range chunks[:take] {
 			buf.Write(chunk)

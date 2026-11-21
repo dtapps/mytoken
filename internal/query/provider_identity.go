@@ -187,7 +187,7 @@ func providerIdentityPredicate(ctx context.Context, tx *sql.Tx, f Filter) (predi
 			rows = append(rows, t)
 		}
 		sort.Slice(rows, func(i, j int) bool {
-			for k := 0; k < 4; k++ {
+			for k := range 4 {
 				if rows[i][k] != rows[j][k] {
 					return rows[i][k] < rows[j][k]
 				}

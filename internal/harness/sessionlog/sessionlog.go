@@ -446,10 +446,7 @@ func (u *Usage) Tokens(mode ReasoningMode) model.Tokens {
 		out -= reasoning
 	}
 	write := Clamp(u.CacheWrite)
-	write1h := Clamp(u.CacheWrite1h)
-	if write1h > write {
-		write1h = write
-	}
+	write1h := min(Clamp(u.CacheWrite1h), write)
 	return model.Tokens{
 		Input:        Clamp(u.Input),
 		Output:       out,

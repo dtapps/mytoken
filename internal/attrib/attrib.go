@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -251,11 +252,11 @@ func (r *Resolver) ResolveInstance(_ context.Context, instance string, e model.U
 	}
 	configs := r.configs[e.Harness]
 	at := e.Timestamp.UnixNano()
-	for i := len(configs) - 1; i >= 0; i-- {
+	for _, config := range slices.Backward(configs) {
 		// While a harness pointed at cc-switch's proxy, the provider behind it
 		// is the one cc-switch had selected, recorded before the switch.
-		if configs[i].from <= at && configs[i].provider != "" && !source.IsLocalProxy(configs[i].base) {
-			return displayProvider(configs[i].provider, e.BaseURL), model.AttribConfig
+		if config.from <= at && config.provider != "" && !source.IsLocalProxy(config.base) {
+			return displayProvider(config.provider, e.BaseURL), model.AttribConfig
 		}
 	}
 	return Infer(e.Model), model.AttribInferred

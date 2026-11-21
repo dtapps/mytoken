@@ -245,8 +245,7 @@ func describe(err error) string {
 	if err == nil {
 		return ""
 	}
-	var e *Error
-	if errors.As(err, &e) {
+	if e, ok := errors.AsType[*Error](err); ok {
 		return fmt.Sprintf("%s (status %d)", e.Reason, e.StatusCode)
 	}
 	return err.Error()

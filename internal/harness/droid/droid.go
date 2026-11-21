@@ -689,8 +689,8 @@ var (
 func normalizeModel(raw string) string {
 	name := strings.TrimSpace(raw)
 	decorated := false
-	if strings.HasPrefix(name, "custom:") {
-		name = strings.TrimPrefix(name, "custom:")
+	if after, ok := strings.CutPrefix(name, "custom:"); ok {
+		name = after
 		decorated = true
 	}
 	if bracketTag.MatchString(name) {

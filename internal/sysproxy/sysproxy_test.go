@@ -249,7 +249,7 @@ func TestSystemLookupIsCached(t *testing.T) {
 	clearProxyEnv(t)
 	calls := stubSystem(t, settings{HTTPS: "127.0.0.1:7897"})
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		if got, _ := Func(request(t, "https://github.com/")); got == nil {
 			t.Fatal("Func() returned no proxy while the system proxy is enabled")
 		}

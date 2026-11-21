@@ -19,7 +19,7 @@ func TestRecomputeCosts(t *testing.T) {
 	ctx := context.Background()
 	zero := 0.0
 	events := []model.UsageEvent{}
-	for i := 0; i < 1100; i++ {
+	for i := range 1100 {
 		events = append(events, model.UsageEvent{DedupKey: fmt.Sprint(i), SessionID: "s", Model: "known", Tokens: model.Tokens{Input: 1000000}})
 	}
 	events = append(events, model.UsageEvent{DedupKey: "log", SessionID: "s", Model: "unknown", CostUSD: &zero}, model.UsageEvent{DedupKey: "unknown", SessionID: "s", Model: "unknown"})

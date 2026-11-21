@@ -28,7 +28,7 @@ var (
 // plainPage returns a page whose trailer is free, as SQLCipher leaves it.
 func plainPage(seed byte, magic bool) []byte {
 	page := make([]byte, cipherPageSize)
-	for i := 0; i < cipherUsable; i++ {
+	for i := range cipherUsable {
 		page[i] = seed + byte(i*7)
 	}
 	if magic {

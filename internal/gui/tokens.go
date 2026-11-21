@@ -189,8 +189,8 @@ func (a *App) tokenUsageCard(c *ui.Context, pal palette) {
 			if hover >= 0 {
 				b := bars[hover]
 				lines := []string{tokenBarLabel(b, everyYear) + " · " + fmtTokens(count(b.tokens))}
-				for i := len(kinds) - 1; i >= 0; i-- {
-					lines = append(lines, tr(kinds[i].key)+"  "+fmtTokens(kinds[i].of(b.tokens)))
+				for _, kind := range slices.Backward(kinds) {
+					lines = append(lines, tr(kind.key)+"  "+fmtTokens(kind.of(b.tokens)))
 				}
 				x := plot.X + slot*float32(hover) + slot/2
 				tooltip(p, pal, x, r.Y+8, r, lines, 1)

@@ -40,7 +40,7 @@ func benchmarkFixture(tb testing.TB) (Service, time.Time) {
 	ctx := context.Background()
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, time.Local)
 	const total = 200000
-	for session := 0; session < 600; session++ {
+	for session := range 600 {
 		n := total / 600
 		if session < total%600 {
 			n++
@@ -157,7 +157,7 @@ func detailFixture(tb testing.TB) (Service, model.Harness, string) {
 	ctx := context.Background()
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, time.Local)
 	const root = "detail-root"
-	for child := 0; child < 3; child++ {
+	for child := range 3 {
 		events := make([]model.UsageEvent, 400)
 		res := make([]store.Resolution, 400)
 		for j := range events {

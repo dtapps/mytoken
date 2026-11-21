@@ -103,6 +103,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -711,7 +712,7 @@ func normalizePending(ids []int64) []int64 {
 	if len(ids) == 0 {
 		return nil
 	}
-	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	slices.Sort(ids)
 	out := ids[:0]
 	var prev int64 = -1
 	for _, id := range ids {
@@ -1057,10 +1058,7 @@ func pendingChunks(ids []int64) [][]int64 {
 	}
 	out := make([][]int64, 0, (len(ids)+pendingBatch-1)/pendingBatch)
 	for start := 0; start < len(ids); start += pendingBatch {
-		end := start + pendingBatch
-		if end > len(ids) {
-			end = len(ids)
-		}
+		end := min(start+pendingBatch, len(ids))
 		out = append(out, ids[start:end])
 	}
 	return out

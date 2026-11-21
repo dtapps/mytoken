@@ -67,13 +67,14 @@ func aggregateSQL(f Filter, hourly bool) (string, []any) {
 	}
 	where, args := filterSQL(middle)
 	where = strings.ReplaceAll(where, "timestamp", "day")
-	q := "SELECT " + usageColumns + " FROM daily_usage" + where
+	var q strings.Builder
+	q.WriteString("SELECT " + usageColumns + " FROM daily_usage" + where)
 	for _, edge := range edges {
 		eq, ea := eventAggregateSQL(edge, false)
-		q += " UNION ALL " + eq
+		q.WriteString(" UNION ALL " + eq)
 		args = append(args, ea...)
 	}
-	return q, args
+	return q.String(), args
 }
 
 // providerAggregateSQL answers an endpoint-aware aggregate from the derived
@@ -87,13 +88,14 @@ func providerAggregateSQL(f Filter) (string, []any) {
 	}
 	where, args := filterSQL(middle)
 	where = strings.ReplaceAll(where, "timestamp", "day")
-	q := "SELECT " + providerUsageColumns + " FROM provider_daily" + where
+	var q strings.Builder
+	q.WriteString("SELECT " + providerUsageColumns + " FROM provider_daily" + where)
 	for _, edge := range edges {
 		eq, ea := eventAggregateSQLMode(edge, false, true)
-		q += " UNION ALL " + eq
+		q.WriteString(" UNION ALL " + eq)
 		args = append(args, ea...)
 	}
-	return q, args
+	return q.String(), args
 }
 
 func eventAggregateSQL(f Filter, hourly bool) (string, []any) {

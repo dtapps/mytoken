@@ -656,8 +656,7 @@ func errorReason(err error) Reason {
 			return Reason(code)
 		}
 	}
-	var e *Error
-	if errors.As(err, &e) {
+	if e, ok := errors.AsType[*Error](err); ok {
 		return e.Reason
 	}
 	return ReasonNetwork

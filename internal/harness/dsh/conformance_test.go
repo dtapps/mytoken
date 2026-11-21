@@ -75,7 +75,7 @@ func seedLines(name string) ([]string, error) {
 		return nil, err
 	}
 	var lines []string
-	for _, line := range strings.Split(strings.TrimRight(string(raw), "\n"), "\n") {
+	for line := range strings.SplitSeq(strings.TrimRight(string(raw), "\n"), "\n") {
 		if strings.TrimSpace(line) != "" {
 			lines = append(lines, line+"\n")
 		}
@@ -86,10 +86,7 @@ func seedLines(name string) ([]string, error) {
 // stepPrefix is the number of records visible at step, matching the suite's
 // ceil(records*(step+1)/Steps) growth rule.
 func stepPrefix(total, step int) int {
-	take := (total*(step+1) + conformanceSteps - 1) / conformanceSteps
-	if take > total {
-		take = total
-	}
+	take := min((total*(step+1)+conformanceSteps-1)/conformanceSteps, total)
 	return take
 }
 

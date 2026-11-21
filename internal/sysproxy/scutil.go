@@ -31,7 +31,7 @@ func parseScutilProxy(out string) settings {
 	var exceptions []string
 	inExceptions := false
 
-	for _, raw := range strings.Split(out, "\n") {
+	for raw := range strings.SplitSeq(out, "\n") {
 		line := strings.TrimSpace(raw)
 		if line == "" {
 			continue

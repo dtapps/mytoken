@@ -495,10 +495,7 @@ func (a *accumulator) handleStatus(b *harness.Batch, payload map[string]json.Raw
 	cacheWrite := numberField(usage, "input_cache_creation", "cache_creation_input_tokens")
 	input := numberField(usage, "input_other", "input_tokens")
 	if input == 0 {
-		input = numberField(usage, "input") - cacheRead - cacheWrite
-		if input < 0 {
-			input = 0
-		}
+		input = max(numberField(usage, "input")-cacheRead-cacheWrite, 0)
 	}
 	output := numberField(usage, "output", "output_tokens")
 	if input == 0 && output == 0 && cacheRead == 0 && cacheWrite == 0 {

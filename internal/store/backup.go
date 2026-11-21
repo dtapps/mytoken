@@ -149,7 +149,7 @@ func (s *Store) BackupFreshDestination(ctx context.Context, canonical string) (s
 // backupFreshDestination is BackupFreshDestination with the timestamp passed in,
 // so tests can pin the exact candidate names.
 func (s *Store) backupFreshDestination(ctx context.Context, canonical, stamp string) (string, error) {
-	for attempt := 0; attempt < maxBackupAttempts; attempt++ {
+	for attempt := range maxBackupAttempts {
 		candidate := backupCandidateName(canonical, attempt, stamp)
 		err := s.Backup(ctx, candidate)
 		if err == nil {

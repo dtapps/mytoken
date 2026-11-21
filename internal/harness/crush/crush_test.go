@@ -487,7 +487,8 @@ func TestNewWithRootsDedupes(t *testing.T) {
 // token/delta class mapping
 // ---------------------------------------------------------------------------
 
-func ptrCost(v float64) *float64 { return &v }
+//go:fix inline
+func ptrCost(v float64) *float64 { return new(v) }
 
 // TestDeltaMapping walks one session's cumulative counters through a sequence of
 // observations and checks that every step emits exactly the monotone delta of the
@@ -510,7 +511,7 @@ func TestDeltaMapping(t *testing.T) {
 			name:   "first observation is the full cumulative value",
 			prompt: 100, completion: 20, cost: 0.01,
 			wantEvents: 1, wantTokens: model.Tokens{Input: 100, Output: 20},
-			wantCost: ptrCost(0.01), wantKey: "crush:s_delta:100:20",
+			wantCost: new(0.01), wantKey: "crush:s_delta:100:20",
 			basePrompt: 100, baseCompletion: 20,
 		},
 		{
@@ -523,7 +524,7 @@ func TestDeltaMapping(t *testing.T) {
 			name:   "growth emits only the difference",
 			prompt: 150, completion: 30, cost: 0.02,
 			wantEvents: 1, wantTokens: model.Tokens{Input: 50, Output: 10},
-			wantCost: ptrCost(0.01), wantKey: "crush:s_delta:150:30",
+			wantCost: new(0.01), wantKey: "crush:s_delta:150:30",
 			basePrompt: 150, baseCompletion: 30,
 		},
 		{
@@ -533,7 +534,7 @@ func TestDeltaMapping(t *testing.T) {
 			name:   "cost-only growth takes a cost-suffixed key",
 			prompt: 150, completion: 30, cost: 0.03,
 			wantEvents: 1, wantTokens: model.Tokens{},
-			wantCost: ptrCost(0.01), wantKey: "crush:s_delta:150:30:cost:0.03",
+			wantCost: new(0.01), wantKey: "crush:s_delta:150:30:cost:0.03",
 			basePrompt: 150, baseCompletion: 30,
 		},
 		{
@@ -546,7 +547,7 @@ func TestDeltaMapping(t *testing.T) {
 			name:   "growth after a backwards move is measured from the high-water mark",
 			prompt: 160, completion: 35, cost: 0.04,
 			wantEvents: 1, wantTokens: model.Tokens{Input: 10, Output: 5},
-			wantCost: ptrCost(0.01), wantKey: "crush:s_delta:160:35",
+			wantCost: new(0.01), wantKey: "crush:s_delta:160:35",
 			basePrompt: 160, baseCompletion: 35,
 		},
 	}

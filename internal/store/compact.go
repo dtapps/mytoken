@@ -128,7 +128,7 @@ func createEventsTriggers(tx *sql.Tx, sc rollupSchema) error {
 	dimInsert := `INSERT INTO event_dimensions(` + sc.dimensionColumns + `) VALUES(` + strings.Join(dimVals, ",") + `) ON CONFLICT DO NOTHING;`
 	dimID := `(SELECT id FROM event_dimensions d WHERE ` + strings.Join(matches, " AND ") + `)`
 	var vals, updates []string
-	for _, c := range strings.Split(sc.factColumns, ",") {
+	for c := range strings.SplitSeq(sc.factColumns, ",") {
 		v := newColExpr(c)
 		if c == "dimension_id" {
 			v = dimID
@@ -158,7 +158,7 @@ func newColExpr(c string) string {
 
 func dimensionMatch(a, b string) string {
 	var equal []string
-	for _, c := range strings.Split(legacyDimensionColumns, ",") {
+	for c := range strings.SplitSeq(legacyDimensionColumns, ",") {
 		equal = append(equal, a+"."+c+"="+b+"."+c)
 	}
 	return strings.Join(equal, " AND ")

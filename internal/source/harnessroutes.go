@@ -127,7 +127,7 @@ func (h *HarnessConfig) openCodeRoutes() []Credential {
 // stripJSONComments drops whole-line // comments, enough for opencode.jsonc.
 func stripJSONComments(raw []byte) []byte {
 	var b bytes.Buffer
-	for _, line := range bytes.Split(raw, []byte("\n")) {
+	for line := range bytes.SplitSeq(raw, []byte("\n")) {
 		if bytes.HasPrefix(bytes.TrimSpace(line), []byte("//")) {
 			continue
 		}

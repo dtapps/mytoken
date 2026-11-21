@@ -214,10 +214,7 @@ func roApplicationState(t *testing.T, db *sql.DB) string {
 // entry means the two images have different lengths.
 func roDiffOffsets(before, after []byte) []int {
 	var out []int
-	n := len(before)
-	if len(after) < n {
-		n = len(after)
-	}
+	n := min(len(after), len(before))
 	for i := 0; i < n; i++ {
 		if before[i] != after[i] {
 			out = append(out, i)

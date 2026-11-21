@@ -321,25 +321,21 @@ func TestConcurrentObserveAndSnapshot(t *testing.T) {
 	tr := newTracker(t, Window)
 	const writers, perWriter = 8, 1000
 	var wg sync.WaitGroup
-	for w := 0; w < writers; w++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for i := 0; i < perWriter; i++ {
+	for range writers {
+		wg.Go(func() {
+			for range perWriter {
 				if err := tr.Observe(1, base, ClassLive); err != nil {
 					t.Errorf("Observe = %v, want nil", err)
 					return
 				}
 			}
-		}()
+		})
 	}
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for i := 0; i < 100; i++ {
+	wg.Go(func() {
+		for range 100 {
 			tr.Snapshot(base)
 		}
-	}()
+	})
 	wg.Wait()
 	checkSnapshot(t, tr.Snapshot(base), Snapshot{
 		Available: true,

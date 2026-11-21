@@ -120,7 +120,7 @@ func rootProvenance() ([]harness.Root, error) {
 	}
 	if v, ok := harness.Getenv("AMP_DATA_DIR"); ok {
 		var dirs []string
-		for _, part := range strings.Split(v, ",") {
+		for part := range strings.SplitSeq(v, ",") {
 			if part = strings.TrimSpace(part); part != "" {
 				dirs = append(dirs, filepath.Clean(part))
 			}

@@ -170,7 +170,7 @@ func TestFreshBackupReservationExhaustion(t *testing.T) {
 
 	canonical := filepath.Join(dir, "mytoken.db.pre-instance-v1.db")
 	const stamp = "20261014-181500"
-	for attempt := 0; attempt < maxBackupAttempts; attempt++ {
+	for attempt := range maxBackupAttempts {
 		if err = os.WriteFile(backupCandidateName(canonical, attempt, stamp), []byte("taken"), 0600); err != nil {
 			t.Fatal(err)
 		}
@@ -185,7 +185,7 @@ func TestFreshBackupReservationExhaustion(t *testing.T) {
 	if !strings.Contains(err.Error(), "after 100 attempts") {
 		t.Fatalf("exhaustion error is not actionable: %v", err)
 	}
-	for attempt := 0; attempt < maxBackupAttempts; attempt++ {
+	for attempt := range maxBackupAttempts {
 		path := backupCandidateName(canonical, attempt, stamp)
 		got, readErr := os.ReadFile(path)
 		if readErr != nil || string(got) != "taken" {

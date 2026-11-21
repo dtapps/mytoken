@@ -112,10 +112,7 @@ func runDoctor(ctx context.Context, args []string, out, errout io.Writer) int {
 		if json.Unmarshal(raw, &cache) == nil && !cache.Fetched.IsZero() {
 			report.PricingSource = "cache"
 			report.PricingFetchedAt = &cache.Fetched
-			age := int64(time.Since(cache.Fetched).Seconds())
-			if age < 0 {
-				age = 0
-			}
+			age := max(int64(time.Since(cache.Fetched).Seconds()), 0)
 			report.PricingAgeSecs = &age
 		}
 	}

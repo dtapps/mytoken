@@ -12,9 +12,11 @@ import (
 	"github.com/nerv-base/mytoken/internal/model"
 	"github.com/nerv-base/mytoken/internal/pricing"
 	"github.com/nerv-base/mytoken/internal/store"
+	"maps"
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -149,14 +151,12 @@ func New(st *store.Store, resolver *attrib.Resolver, pricer *pricing.Pricer, par
 }
 
 func newScanner(st *store.Store, resolver *attrib.Resolver, pricer *pricing.Pricer) *Scanner {
-	workers := runtime.NumCPU()
-	// Parsing many large JSONL files concurrently multiplies decoder buffers. A
-	// bounded pool keeps peak RSS predictable while retaining parallel IO; the
-	// corpus is dominated by a handful of very large logs, so a wider pool than
-	// four still fills the disk-read pipeline on a typical machine.
-	if workers > 8 {
-		workers = 8
-	}
+	workers := min(
+		// Parsing many large JSONL files concurrently multiplies decoder buffers. A
+		// bounded pool keeps peak RSS predictable while retaining parallel IO; the
+		// corpus is dominated by a handful of very large logs, so a wider pool than
+		// four still fills the disk-read pipeline on a typical machine.
+		runtime.NumCPU(), 8)
 	return &Scanner{
 		st: st, resolver: resolver, pricer: pricer, workers: workers,
 		// interval is the full scan period: discovery plus a parse of every
@@ -416,9 +416,7 @@ func (s *Scanner) scanMode(ctx context.Context, mode scanMode, hints []string) (
 	}
 	activity := make(map[string]time.Time, len(s.activity))
 	if quick {
-		for dir, at := range s.activity {
-			activity[dir] = at
-		}
+		maps.Copy(activity, s.activity)
 	}
 	s.mu.Unlock()
 	if s.discovered == nil {
@@ -581,17 +579,12 @@ func (s *Scanner) scanMode(ctx context.Context, mode scanMode, hints []string) (
 	}
 	results := make(chan result, s.workers+1)
 	var wg sync.WaitGroup
-	n := s.workers
-	if n < 1 {
-		n = 1
-	}
+	n := max(s.workers, 1)
 	if n > len(work) {
 		n = len(work)
 	}
 	for i := 0; i < n; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			for item := range ch {
 				if ctx.Err() != nil {
 					return
@@ -609,7 +602,7 @@ func (s *Scanner) scanMode(ctx context.Context, mode scanMode, hints []string) (
 				}
 				s.mu.Unlock()
 			}
-		}()
+		})
 	}
 	go func() {
 	dispatch:
@@ -869,9 +862,7 @@ func (s *Scanner) Run(ctx context.Context) error {
 			dirs = append(dirs, dir)
 		}
 		activity := make(map[string]time.Time, len(s.activity))
-		for dir, at := range s.activity {
-			activity[dir] = at
-		}
+		maps.Copy(activity, s.activity)
 		s.mu.Unlock()
 		for _, dir := range watchPlan(roots, dirs, activity, watchFDBudget) {
 			watch(dir)
@@ -1134,8 +1125,8 @@ func watchDirs(roots, dirs []string) []string {
 				chain = append(chain, d)
 			}
 		}
-		for i := len(chain) - 1; i >= 0; i-- {
-			add(chain[i])
+		for _, c := range slices.Backward(chain) {
+			add(c)
 		}
 		add(dir)
 	}

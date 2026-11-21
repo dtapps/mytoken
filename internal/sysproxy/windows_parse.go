@@ -14,7 +14,7 @@ func parseProxyServer(value string) (httpAddr, httpsAddr, socksAddr string) {
 		addr := normalizeProxyAddr(value)
 		return addr, addr, ""
 	}
-	for _, part := range strings.Split(value, ";") {
+	for part := range strings.SplitSeq(value, ";") {
 		key, val, ok := strings.Cut(part, "=")
 		if !ok {
 			continue
@@ -41,7 +41,7 @@ func parseProxyServer(value string) (httpAddr, httpsAddr, socksAddr string) {
 // <local>. Empty entries are dropped; matching happens in matchException.
 func parseProxyOverride(value string) []string {
 	var entries []string
-	for _, part := range strings.Split(value, ";") {
+	for part := range strings.SplitSeq(value, ";") {
 		if part = strings.TrimSpace(part); part != "" {
 			entries = append(entries, part)
 		}

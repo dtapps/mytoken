@@ -20,7 +20,7 @@ type rateSpec struct {
 func rateEvents(now time.Time, specs ...rateSpec) []query.AttributedEvent {
 	out := make([]query.AttributedEvent, 0, len(specs))
 	for _, s := range specs {
-		e := query.AttributedEvent{UsageEvent: model.UsageEvent{Timestamp: now.Add(-s.age), DecodeMS: s.decodeMS}}
+		e := query.AttributedEvent{Timestamp: now.Add(-s.age), DecodeMS: s.decodeMS}
 		e.Tokens = model.Tokens{Output: s.out, Reasoning: s.reasoning}
 		out = append(out, e)
 	}
@@ -316,7 +316,7 @@ func TestOutputRateReportsProvenance(t *testing.T) {
 // measuredWindow is the boundary itself: exactly plausibleRate is still a
 // window the log could have watched.
 func TestMeasuredWindowBoundary(t *testing.T) {
-	e := query.AttributedEvent{UsageEvent: model.UsageEvent{DecodeMS: 1000}}
+	e := query.AttributedEvent{DecodeMS: 1000}
 	e.Tokens = model.Tokens{Output: 1000}
 	if !measuredWindow(e) {
 		t.Fatal("1000 tokens in 1 s must be believed")

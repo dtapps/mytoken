@@ -82,7 +82,7 @@ func TestInstanceReimportIdempotent(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer st.Close()
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		commitInstance(t, st, "alpha", "log", "same-key", "s1", "", 10)
 	}
 	commitInstance(t, st, "beta", "log", "same-key", "s1", "", 10)

@@ -255,11 +255,11 @@ func TestWindowName(t *testing.T) {
 		seconds *int64
 		want    string
 	}{
-		{ptr(int64(18000)), "5h"},
-		{ptr(int64(604800)), "week"},
-		{ptr(int64(86400)), "1d"},
-		{ptr(int64(7200)), "2h"},
-		{ptr(int64(90)), "1m"},
+		{new(int64(18000)), "5h"},
+		{new(int64(604800)), "week"},
+		{new(int64(86400)), "1d"},
+		{new(int64(7200)), "2h"},
+		{new(int64(90)), "1m"},
 		{nil, "primary"},
 	}
 	for _, tc := range cases {
@@ -311,4 +311,5 @@ func TestCredentialIsRedacted(t *testing.T) {
 	}
 }
 
-func ptr[T any](v T) *T { return &v }
+//go:fix inline
+func ptr[T any](v T) *T { return new(v) }

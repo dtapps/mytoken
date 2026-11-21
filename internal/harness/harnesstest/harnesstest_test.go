@@ -339,10 +339,7 @@ func growDoc(_ testing.TB, dir string, step int) error {
 	if err := json.Unmarshal(raw, &entries); err != nil {
 		return err
 	}
-	n := (step + 1) * 2
-	if n > len(entries) {
-		n = len(entries)
-	}
+	n := min((step+1)*2, len(entries))
 	out, err := json.MarshalIndent(docFile{Entries: entries[:n]}, "", "  ")
 	if err != nil {
 		return err

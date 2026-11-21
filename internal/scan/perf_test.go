@@ -55,10 +55,10 @@ func (p genParser) Parse(ctx context.Context, src harness.Source, cur harness.Cu
 func genCorpus(tb testing.TB, files, perFile int) (string, *store.Store, *Scanner) {
 	tb.Helper()
 	dir := tb.TempDir()
-	for f := 0; f < files; f++ {
+	for f := range files {
 		path := filepath.Join(dir, fmt.Sprintf("log-%03d", f))
 		buf := make([]byte, 0, perFile*2)
-		for i := 0; i < perFile; i++ {
+		for range perFile {
 			buf = append(buf, "x\n"...)
 		}
 		if err := os.WriteFile(path, buf, 0o600); err != nil {
@@ -86,7 +86,7 @@ func TestFreshScanIsLinear(t *testing.T) {
 	// Measuring all of one size before the other lets one stall inflate only
 	// the larger number and fake a quadratic regression.
 	measure := func() (one, two time.Duration) {
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			_, _, small := genCorpus(t, 4, 4000) // 16K events
 			start := time.Now()
 			if err := small.Scan(context.Background()); err != nil {

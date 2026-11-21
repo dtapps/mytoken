@@ -97,8 +97,8 @@ func BranchKey(project, branch string) string {
 // rather than as a missing value, because "no branch was recorded" is itself a
 // reportable state and must stay distinguishable from a wrong branch.
 func SplitBranchKey(key string) (project, branch string) {
-	if i := strings.IndexByte(key, 0); i >= 0 {
-		return key[:i], key[i+1:]
+	if before, after, ok := strings.Cut(key, "\x00"); ok {
+		return before, after
 	}
 	return key, ""
 }

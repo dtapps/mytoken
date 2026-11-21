@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -120,10 +121,8 @@ func (s *Store) hasUniqueKeyOn(ctx context.Context, table, column string) (bool,
 		if err != nil {
 			return false, err
 		}
-		for _, name := range columns {
-			if name == column {
-				return true, nil
-			}
+		if slices.Contains(columns, column) {
+			return true, nil
 		}
 	}
 	return false, nil

@@ -99,10 +99,7 @@ func (s *Store) CommitManyOutcomeRecent(ctx context.Context, writes []Write, sin
 func existingKeys(ctx context.Context, prepare func(string) (*sql.Stmt, error), h model.Harness, instance string, keys []string) (map[string]bool, error) {
 	existing := make(map[string]bool, len(keys))
 	for start := 0; start < len(keys); start += keyLookupChunk {
-		end := start + keyLookupChunk
-		if end > len(keys) {
-			end = len(keys)
-		}
+		end := min(start+keyLookupChunk, len(keys))
 		part := keys[start:end]
 		query := "SELECT dedup_key FROM event_data WHERE harness=? AND instance_id=? AND dedup_key IN (" + strings.TrimSuffix(strings.Repeat("?,", len(part)), ",") + ")"
 		stmt, err := prepare(query)

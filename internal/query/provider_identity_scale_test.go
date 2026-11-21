@@ -33,7 +33,7 @@ func idScaleStore(t *testing.T, sessions int) (Service, *store.Store) {
 		ProjectPath: "/p/one", Model: "gpt-5", Provider: "price-a", BaseURL: idEndpointMain,
 		Tokens: model.Tokens{Input: 1},
 	}}
-	for i := 0; i < sessions; i++ {
+	for i := range sessions {
 		events = append(events, model.UsageEvent{
 			Harness: model.Codex, DedupKey: fmt.Sprintf("scale-%05d", i), SessionID: fmt.Sprintf("s-scale-%05d", i),
 			Timestamp: idDay(0), ProjectPath: "/p/one", Model: "gpt-5", Provider: "price-a", BaseURL: idEndpointRaw,

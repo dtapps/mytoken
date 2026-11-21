@@ -196,9 +196,7 @@ func open(refresh bool) (*App, error) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	a.cancel = cancel
-	a.workers.Add(1)
-	go func() {
-		defer a.workers.Done()
+	a.workers.Go(func() {
 		ticker := time.NewTicker(24 * time.Hour)
 		defer ticker.Stop()
 		for {
@@ -213,7 +211,7 @@ func open(refresh bool) (*App, error) {
 			case <-ticker.C:
 			}
 		}
-	}()
+	})
 	return a, nil
 }
 

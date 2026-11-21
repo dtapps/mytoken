@@ -219,13 +219,11 @@ func Resolve(now time.Time, kind Kind, loc *time.Location) (State, error) {
 	// Elapsed is the real elapsed duration between the two instants, so it stays
 	// correct across a DST transition. It is deliberately not a percent of the
 	// period: percentage would turn 23h/25h days into a lie.
-	elapsed := nowLocal.Sub(current.Start)
-	if elapsed < 0 {
+	elapsed := max(nowLocal.Sub(current.Start),
 		// Current.Start is the earliest instant of the selected local calendar
 		// date, so it cannot follow now. Keep the no-negative-elapsed contract
 		// even if a location's zone data ever defeats the boundary search.
-		elapsed = 0
-	}
+		0)
 	comparisonEnd := previous.Start.Add(elapsed)
 	if comparisonEnd.After(previous.End) {
 		comparisonEnd = previous.End

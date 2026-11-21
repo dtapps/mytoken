@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 	"math/rand/v2"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -160,8 +161,8 @@ func makeSessionOf(r *rand.Rand, n int, tool demoTool, start, now time.Time, req
 		p := demoPrice[m] / 1e6
 		cost := float64(in)*p + float64(out)*p*5 + float64(read)*p*0.1 + float64(write)*p*1.25
 		s.events = append(s.events, query.AttributedEvent{
-			UsageEvent: model.UsageEvent{Harness: tool.h, SessionID: id, Timestamp: t, Model: m, Tokens: tk, ProjectPath: meta.Project},
-			Cost:       cost, Priced: true, ResolvedProvider: providerOf(m),
+			Harness: tool.h, SessionID: id, Timestamp: t, Model: m, Tokens: tk, ProjectPath: meta.Project,
+			Cost: cost, Priced: true, ResolvedProvider: providerOf(m),
 		})
 	}
 	if len(s.events) > 0 {
@@ -206,21 +207,11 @@ func keep(f query.Filter, e query.AttributedEvent) bool {
 }
 
 func containsH(l []model.Harness, h model.Harness) bool {
-	for _, x := range l {
-		if x == h {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(l, h)
 }
 
 func containsS(l []string, s string) bool {
-	for _, x := range l {
-		if x == s {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(l, s)
 }
 
 func (d *demo) each(f query.Filter, fn func(s *demoSession, e query.AttributedEvent)) {

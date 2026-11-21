@@ -10,7 +10,7 @@ import (
 // apart, each carrying one token.
 func fillCapacity(t *testing.T, tr *Tracker) {
 	t.Helper()
-	for i := 0; i < Capacity; i++ {
+	for i := range Capacity {
 		mustObserve(t, tr, 1, base.Add(time.Duration(i)*time.Millisecond), ClassLive)
 	}
 }
@@ -88,7 +88,7 @@ func TestHeartbeatDoesNotConsumeCapacity(t *testing.T) {
 // consume a single slot and never hit the capacity limit.
 func TestSameTimestampCoalescingDoesNotConsumeCapacity(t *testing.T) {
 	tr := newTracker(t, Window)
-	for i := 0; i < Capacity+10; i++ {
+	for range Capacity + 10 {
 		mustObserve(t, tr, 1, base, ClassLive)
 	}
 	checkSnapshot(t, tr.Snapshot(base), Snapshot{

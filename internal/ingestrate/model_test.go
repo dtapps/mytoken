@@ -36,7 +36,7 @@ func TestExactWindowMatchesReferenceModel(t *testing.T) {
 	}
 
 	now := base
-	for step := 0; step < 800; step++ {
+	for step := range 800 {
 		// Advance by 0..3s, then observe and snapshot at that instant.
 		now = now.Add(time.Duration(rng.Intn(3000)) * time.Millisecond)
 		delta := int64(rng.Intn(1000) + 1)

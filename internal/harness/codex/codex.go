@@ -1062,10 +1062,7 @@ func dedupKey(scope string, u *rawUsage) string {
 
 // snapshot is the normalized cumulative totals, used for duplicate detection.
 func snapshot(u *rawUsage) model.Tokens {
-	cached := u.CachedInputTokens
-	if u.CacheReadInputTokens > cached {
-		cached = u.CacheReadInputTokens
-	}
+	cached := max(u.CacheReadInputTokens, u.CachedInputTokens)
 	cached = clamp(cached, u.InputTokens)
 	write := clamp(u.CacheWriteInputTokens, u.InputTokens-cached)
 	reasoning := clamp(u.ReasoningOutputTokens, u.OutputTokens)

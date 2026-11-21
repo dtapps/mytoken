@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/nerv-base/mytoken/internal/model"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -193,12 +194,8 @@ func firstPartyNormalized(n string) string {
 func (p *Pricer) merge(prices map[string]Price) {
 	table := &Pricer{prices: prices}
 	table.index()
-	for k, v := range prices {
-		p.prices[k] = v
-	}
-	for k, v := range table.aliases {
-		p.aliases[k] = v
-	}
+	maps.Copy(p.prices, prices)
+	maps.Copy(p.aliases, table.aliases)
 }
 
 // catalogRank orders the spellings of one model: the vendor's own qualified

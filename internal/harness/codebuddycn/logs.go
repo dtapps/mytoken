@@ -205,11 +205,11 @@ func (p *Parser) consumeLogLine(b *harness.Batch, sessions map[string]*model.Ses
 // valueAfterTag returns the bracket group that follows tag, e.g. the agent id in
 // "[AgentReporter] [1a7aac0766...]".
 func valueAfterTag(line, tag string) (string, bool) {
-	i := strings.Index(line, tag)
-	if i < 0 {
+	_, after, ok := strings.Cut(line, tag)
+	if !ok {
 		return "", false
 	}
-	rest := strings.TrimLeft(line[i+len(tag):], " ")
+	rest := strings.TrimLeft(after, " ")
 	if m := agentTag.FindStringSubmatch(rest); m != nil {
 		return m[1], true
 	}
@@ -219,11 +219,11 @@ func valueAfterTag(line, tag string) (string, bool) {
 // modelAfterMarker reads "Hy4 (hy4free)" and keeps the parenthesized id when the
 // line carries one, which is the id the gateway actually billed.
 func modelAfterMarker(line string) string {
-	i := strings.Index(line, modelMarker)
-	if i < 0 {
+	_, after, ok := strings.Cut(line, modelMarker)
+	if !ok {
 		return ""
 	}
-	rest := strings.TrimSpace(line[i+len(modelMarker):])
+	rest := strings.TrimSpace(after)
 	if open := strings.LastIndex(rest, "("); open != -1 {
 		if closeIdx := strings.Index(rest[open+1:], ")"); closeIdx != -1 {
 			if inner := strings.TrimSpace(rest[open+1 : open+1+closeIdx]); inner != "" {
@@ -239,11 +239,11 @@ func modelAfterMarker(line string) string {
 
 // usageJSON decodes the object that ends the line.
 func usageJSON(line string) (map[string]any, bool) {
-	i := strings.Index(line, usageMarker)
-	if i < 0 {
+	_, after, ok := strings.Cut(line, usageMarker)
+	if !ok {
 		return nil, false
 	}
-	raw := strings.TrimSpace(line[i+len(usageMarker):])
+	raw := strings.TrimSpace(after)
 	end := strings.LastIndex(raw, "}")
 	if end < 0 {
 		return nil, false

@@ -646,7 +646,7 @@ func isSynthetic(m string) bool { return strings.HasPrefix(m, "<") }
 // a "<session-id>/subagents/..." tree, else "".
 func parentSessionOf(path string) string {
 	dir := filepath.Dir(path)
-	for i := 0; i < 8; i++ {
+	for range 8 {
 		if filepath.Base(dir) == subagentsDir {
 			return filepath.Base(filepath.Dir(dir))
 		}

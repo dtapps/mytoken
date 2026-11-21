@@ -253,7 +253,7 @@ func configDirs(getenv func(string) string, home string) []string {
 		out = append(out, dir)
 	}
 	if getenv != nil {
-		for _, dir := range strings.Split(getenv("CLAUDE_CONFIG_DIR"), string(os.PathListSeparator)) {
+		for dir := range strings.SplitSeq(getenv("CLAUDE_CONFIG_DIR"), string(os.PathListSeparator)) {
 			add(dir)
 		}
 	}

@@ -60,6 +60,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -498,8 +499,8 @@ func stashedFromHistory(rs *runState) stashedUsage {
 		return stashedUsage{}
 	}
 	history := rs.SessionState.MainAgentState.MessageHistory
-	for i := len(history) - 1; i >= 0; i-- {
-		entry := history[i]
+	for _, entry := range slices.Backward(history) {
+
 		if !strings.EqualFold(strings.TrimSpace(entry.Role), "assistant") ||
 			entry.ProviderOptions == nil || entry.ProviderOptions.Codebuff == nil {
 			continue
@@ -595,12 +596,7 @@ func sessionIdentity(path string) (channel, project, chatID string) {
 }
 
 func isChannel(name string) bool {
-	for _, channel := range channelNames {
-		if name == channel {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(channelNames, name)
 }
 
 // chatIDTimeRe rewrites the chat id's dashed clock ("2026-04-14T10-00-00.000Z")
@@ -707,7 +703,7 @@ func firstNumber(obj map[string]any, keys ...string) (int64, string) {
 
 func lookupNumber(obj map[string]any, path string) (int64, bool) {
 	var current any = obj
-	for _, part := range strings.Split(path, ".") {
+	for part := range strings.SplitSeq(path, ".") {
 		object, ok := current.(map[string]any)
 		if !ok {
 			return 0, false

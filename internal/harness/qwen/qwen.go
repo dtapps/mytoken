@@ -311,10 +311,7 @@ func (a *accumulator) handle(b *harness.Batch, e *entry) {
 	if cached > 0 && u.TotalTokenCount != 0 &&
 		u.TotalTokenCount == u.PromptTokenCount+u.CandidatesTokenCount+u.ThoughtsTokenCount &&
 		u.TotalTokenCount != u.PromptTokenCount+u.CandidatesTokenCount+u.ThoughtsTokenCount+cached {
-		input = u.PromptTokenCount - cached
-		if input < 0 {
-			input = 0
-		}
+		input = max(u.PromptTokenCount-cached, 0)
 	}
 	tk := model.Tokens{
 		Input:     input,

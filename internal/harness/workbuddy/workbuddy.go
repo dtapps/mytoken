@@ -556,17 +556,11 @@ func mapTokens(u *messageUsage, pd *providerData) model.Tokens {
 		if raw.CompletionTokens > 0 {
 			out = raw.CompletionTokens
 		}
-		read = raw.CacheReadInputTokens
-		if raw.PromptCacheHitTokens > read {
-			read = raw.PromptCacheHitTokens
-		}
+		read = max(raw.PromptCacheHitTokens, raw.CacheReadInputTokens)
 		if raw.CachedTokens > read {
 			read = raw.CachedTokens
 		}
-		write = raw.CacheCreationInputTokens
-		if raw.PromptCacheWriteTokens > write {
-			write = raw.PromptCacheWriteTokens
-		}
+		write = max(raw.PromptCacheWriteTokens, raw.CacheCreationInputTokens)
 		reasoning = raw.CompletionThinkingTokens
 	}
 	if u.CacheReadTokens > read {
@@ -660,7 +654,7 @@ func sessionIDFromPath(path string) string {
 // <project>/<session-id>/subagents/agent-<hex>.jsonl.
 func parentFromPath(path string) string {
 	dir := filepath.Dir(path)
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		if filepath.Base(dir) == subagentsDir {
 			if parent := filepath.Base(filepath.Dir(dir)); looksLikeSessionID(parent) {
 				return parent

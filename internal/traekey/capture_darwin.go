@@ -210,7 +210,7 @@ func waitForAgent(ctx context.Context, match string, timeout time.Duration) (int
 			return 0, err
 		}
 		if out, err := exec.Command("pgrep", "-f", match).Output(); err == nil {
-			for _, field := range strings.Fields(string(out)) {
+			for field := range strings.FieldsSeq(string(out)) {
 				pid, err := strconv.Atoi(field)
 				if err != nil {
 					continue

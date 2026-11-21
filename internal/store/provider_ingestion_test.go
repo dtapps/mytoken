@@ -20,7 +20,7 @@ func TestIngestionMaintainsEndpointIdentity(t *testing.T) {
 		{DedupKey: "three", SessionID: "s", BaseURL: "https://api.example.com/tenant-b", Provider: "account-c"},
 		{DedupKey: "four", SessionID: "s", BaseURL: "http://localhost:8080", Provider: "local"},
 	}}
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		if err = s.Commit(ctx, model.Codex, "fixture", batch, nil); err != nil {
 			t.Fatal(err)
 		}

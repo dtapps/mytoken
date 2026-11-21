@@ -727,7 +727,7 @@ func linkedLedgerUsage(transcriptPath, sessionID string) []ledgerRecord {
 		if err != nil {
 			continue
 		}
-		for _, line := range strings.Split(string(raw), "\n") {
+		for line := range strings.SplitSeq(string(raw), "\n") {
 			line = strings.TrimSpace(line)
 			if line == "" {
 				continue
@@ -762,7 +762,7 @@ func linkedLedgerUsage(transcriptPath, sessionID string) []ledgerRecord {
 // the Cowork usage ledger.
 func workspaceOf(path string) string {
 	dir := filepath.Dir(path)
-	for i := 0; i < maxWalkDepth; i++ {
+	for range maxWalkDepth {
 		if st, err := os.Stat(filepath.Join(dir, ledgerName)); err == nil && st.IsDir() {
 			return dir
 		}

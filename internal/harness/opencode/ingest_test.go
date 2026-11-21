@@ -188,7 +188,7 @@ INSERT INTO message VALUES ('msg_dup','ses_dup',1742307010000,1742307010000,
 	type pair struct{ input, output int64 }
 	dbPair, jsonPair := pair{500, 100}, pair{70, 9}
 	seen := map[pair]int{}
-	for run := 0; run < 20; run++ {
+	for run := range 20 {
 		dir, st := ingestFixture(t, ddl)
 		msgDir := filepath.Join(dir, "storage", "message", "ses_dup")
 		if err := os.MkdirAll(msgDir, 0o755); err != nil {

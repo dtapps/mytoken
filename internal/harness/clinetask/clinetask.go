@@ -86,6 +86,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -305,14 +306,12 @@ func DiscoverWithContext(ctx context.Context, root string, opts Options) []harne
 // (a bare tasks directory, or the standalone CLI's sessions directory) is still
 // accepted because there is nothing to disambiguate.
 func sameFamily(path, want string) bool {
-	for _, part := range strings.Split(filepath.ToSlash(path), "/") {
+	for part := range strings.SplitSeq(filepath.ToSlash(path), "/") {
 		if part == want {
 			continue
 		}
-		for _, ext := range clineFamilyExtensions {
-			if part == ext {
-				return false
-			}
+		if slices.Contains(clineFamilyExtensions, part) {
+			return false
 		}
 	}
 	return true
@@ -667,15 +666,15 @@ func readHistoryMeta(path string) (modelName, workspace string) {
 	}
 	text := string(data)
 	blocks := envDetailsRE.FindAllStringSubmatch(text, -1)
-	for i := len(blocks) - 1; i >= 0; i-- {
-		if m := modelTagRE.FindStringSubmatch(blocks[i][1]); m != nil {
+	for _, block := range slices.Backward(blocks) {
+		if m := modelTagRE.FindStringSubmatch(block[1]); m != nil {
 			modelName = strings.TrimSpace(m[1])
 			break
 		}
 	}
 	ws := workspaceRE.FindAllStringSubmatch(text, -1)
-	for i := len(ws) - 1; i >= 0; i-- {
-		if v := strings.TrimSpace(ws[i][1]); v != "" {
+	for _, w := range slices.Backward(ws) {
+		if v := strings.TrimSpace(w[1]); v != "" {
 			workspace = v
 			break
 		}
@@ -696,10 +695,10 @@ func readTaskMetadata(path string) (modelName, providerID string) {
 	}
 	// model_usage is append-ordered; the last entry is the model in use when
 	// the task was last written.
-	for i := len(meta.ModelUsage) - 1; i >= 0; i-- {
-		if v := strings.TrimSpace(meta.ModelUsage[i].ModelID); v != "" {
+	for _, v := range slices.Backward(meta.ModelUsage) {
+		if v := strings.TrimSpace(v.ModelID); v != "" {
 			modelName = v
-			providerID = strings.TrimSpace(meta.ModelUsage[i].ModelProviderID)
+			providerID = strings.TrimSpace(v.ModelProviderID)
 			break
 		}
 	}

@@ -249,11 +249,11 @@ func TestNewRootedConcurrentAccess(t *testing.T) {
 	parsers := harness.All()
 	const workers = 8
 	var wg sync.WaitGroup
-	for w := 0; w < workers; w++ {
+	for w := range workers {
 		wg.Add(1)
 		go func(w int) {
 			defer wg.Done()
-			for i := 0; i < 25; i++ {
+			for i := range 25 {
 				root := filepath.Join(os.TempDir(), "mytoken-rooted-test", fmt.Sprintf("w%d-i%d", w, i))
 				for _, p := range parsers {
 					h := p.Harness()

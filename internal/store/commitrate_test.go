@@ -120,7 +120,7 @@ func TestCommitManyOutcomeSpansFlushBoundary(t *testing.T) {
 	st := openRateStore(t)
 
 	events := make([]model.UsageEvent, 0, 201)
-	for i := 0; i < 200; i++ {
+	for i := range 200 {
 		events = append(events, rateEvent(fmt.Sprintf("e%d", i), 1))
 	}
 	events = append(events, rateEvent("e0", 1)) // the first key, repeated

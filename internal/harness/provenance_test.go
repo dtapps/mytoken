@@ -361,11 +361,9 @@ func TestProvenanceConcurrentAccess(t *testing.T) {
 	const iterations = 25
 	var wg sync.WaitGroup
 	errs := make(chan string, workers)
-	for w := 0; w < workers; w++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for i := 0; i < iterations; i++ {
+	for range workers {
+		wg.Go(func() {
+			for range iterations {
 				for _, p := range harness.All() {
 					h := p.Harness()
 					roots, ok, err := harness.RegisteredProvenance(h)
@@ -379,7 +377,7 @@ func TestProvenanceConcurrentAccess(t *testing.T) {
 					}
 				}
 			}
-		}()
+		})
 	}
 	wg.Wait()
 	close(errs)

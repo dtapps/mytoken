@@ -202,7 +202,7 @@ func TestVersionMigrationDrainsAStaticLedgerPastTheRowCap(t *testing.T) {
 
 	seen := map[string]int{}
 	cur := legacy
-	for i := 0; i < 6; i++ {
+	for i := range 6 {
 		b, err := p.Parse(ctx, src, cur)
 		if err != nil {
 			t.Fatalf("scan %d of the v2 migration: %v", i+1, err)

@@ -43,6 +43,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -242,10 +243,8 @@ func (spec Spec) requiredColumns() []string {
 	if !ok {
 		return cols
 	}
-	for _, c := range cols {
-		if c == name {
-			return cols
-		}
+	if slices.Contains(cols, name) {
+		return cols
 	}
 	return append(cols, name)
 }

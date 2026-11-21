@@ -450,8 +450,8 @@ func activeSessions(ctx context.Context, q Query, now time.Time, recent *recentE
 		}
 		s := activeSession{row: r, hit: r.Tokens.HitRate(), last: r.UpdatedAt}
 		s.rate, s.requests, s.measured = outputRate(events, now)
-		for i := len(events) - 1; i >= 0; i-- {
-			e := events[i]
+		for _, e := range slices.Backward(events) {
+
 			if now.Sub(e.Timestamp) <= activeWindow {
 				s.pulses = append(s.pulses, pulse{e.Timestamp, e.Cost})
 			}
@@ -877,12 +877,13 @@ func (a *App) filterSessions() {
 }
 
 func matches(r query.SessionRow, terms []string) bool {
-	hay := strings.ToLower(r.Title + " " + r.Project + " " + r.Harness.DisplayName() + " " + r.SessionID)
+	var hay strings.Builder
+	hay.WriteString(strings.ToLower(r.Title + " " + r.Project + " " + r.Harness.DisplayName() + " " + r.SessionID))
 	for _, b := range r.Breakdown {
-		hay += " " + strings.ToLower(b.Model)
+		hay.WriteString(" " + strings.ToLower(b.Model))
 	}
 	for _, t := range terms {
-		if !strings.Contains(hay, t) {
+		if !strings.Contains(hay.String(), t) {
 			return false
 		}
 	}

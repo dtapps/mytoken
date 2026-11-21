@@ -1340,7 +1340,7 @@ func firstNonEmpty(values ...string) string {
 // splitJSONLines returns the non-blank lines of a JSONL document.
 func splitJSONLines(raw []byte) [][]byte {
 	var out [][]byte
-	for _, line := range bytes.Split(raw, []byte("\n")) {
+	for line := range bytes.SplitSeq(raw, []byte("\n")) {
 		if line = bytes.TrimSpace(line); len(line) > 0 {
 			out = append(out, line)
 		}

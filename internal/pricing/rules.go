@@ -1,6 +1,8 @@
 package pricing
 
 import (
+	"maps"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -83,9 +85,7 @@ func (p *Pricer) SetAliases(aliases map[[2]string]string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.modelAliases = map[[2]string]string{}
-	for k, v := range aliases {
-		p.modelAliases[k] = v
-	}
+	maps.Copy(p.modelAliases, aliases)
 }
 func (p *Pricer) canonical(provider, name string) string {
 	if v := p.modelAliases[[2]string{provider, name}]; v != "" {
@@ -106,9 +106,9 @@ func (p *Pricer) CanonicalModel(provider, name string) string {
 // broken toward user rules (SetRules appends them last).
 func (p *Pricer) ruleAt(key [2]string, t time.Time) (Rule, bool) {
 	list := p.rules[key]
-	for i := len(list) - 1; i >= 0; i-- {
-		if !list[i].From.After(t) {
-			return list[i], true
+	for _, l := range slices.Backward(list) {
+		if !l.From.After(t) {
+			return l, true
 		}
 	}
 	return Rule{}, false
@@ -239,14 +239,8 @@ func (p *Pricer) Evaluate(e model.UsageEvent) (float64, bool) {
 	// Cache writes are split into the 1-hour tier (2x input) and the 5-minute
 	// tier (the catalog's cache-write rate, or 1.25x input when the catalog has
 	// none). CacheWrite1h is a subset of CacheWrite.
-	oneHour := t.CacheWrite1h
-	if oneHour < 0 {
-		oneHour = 0
-	}
-	fiveMinute := t.CacheWrite - oneHour
-	if fiveMinute < 0 {
-		fiveMinute = 0
-	}
+	oneHour := max(t.CacheWrite1h, 0)
+	fiveMinute := max(t.CacheWrite-oneHour, 0)
 	cacheWriteRate := price.CacheWrite
 	if cacheWriteRate == 0 && price.Input > 0 {
 		cacheWriteRate = 1.25 * price.Input

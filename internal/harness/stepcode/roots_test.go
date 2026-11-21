@@ -142,8 +142,7 @@ func TestBadDirsListIsHardError(t *testing.T) {
 	for _, bad := range []string{sep, sep + sep} {
 		t.Setenv(stepDirsEnv, bad)
 		roots, err := New().RootProvenance()
-		var listErr *harness.EnvListError
-		if !errors.As(err, &listErr) {
+		if _, ok := errors.AsType[*harness.EnvListError](err); !ok {
 			t.Fatalf("%q: err = %v, want *harness.EnvListError", bad, err)
 		}
 		if len(roots) != 0 {

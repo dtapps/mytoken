@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/nerv-base/mytoken/internal/model"
 	"github.com/nerv-base/mytoken/internal/store"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -393,13 +394,7 @@ func (s *service) loadTx(ctx context.Context, tx *sql.Tx, f Filter, mode ...load
 			v.Model = target
 		}
 		if len(models) > 0 {
-			matches := false
-			for _, name := range models {
-				if name == v.Model {
-					matches = true
-					break
-				}
-			}
+			matches := slices.Contains(models, v.Model)
 			if !matches {
 				continue
 			}

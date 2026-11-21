@@ -109,6 +109,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"slices"
 	"strings"
 	"time"
 
@@ -908,8 +909,8 @@ func parentFromPath(root, path string) string {
 			return "" // outside the configured root: no reliable ancestry
 		}
 		parts := strings.Split(rel, string(filepath.Separator))
-		for i := len(parts) - 1; i >= 0; i-- {
-			if id := idFromDirName(parts[i]); id != "" {
+		for _, part := range slices.Backward(parts) {
+			if id := idFromDirName(part); id != "" {
 				return id
 			}
 		}
