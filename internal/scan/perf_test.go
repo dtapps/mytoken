@@ -80,28 +80,46 @@ func TestFreshScanIsLinear(t *testing.T) {
 	if testing.Short() {
 		t.Skip("timing test")
 	}
-	measure := func(files, perFile int) time.Duration {
-		best := time.Duration(0)
-		for i := 0; i < 2; i++ {
-			_, _, sc := genCorpus(t, files, perFile)
+	// Interleave the sizes and keep the fastest of three runs. On a shared
+	// runner (Windows in particular, with Defender scanning newly written
+	// files) any single scan can stall, and noise only ever adds time.
+	// Measuring all of one size before the other lets one stall inflate only
+	// the larger number and fake a quadratic regression.
+	measure := func() (one, two time.Duration) {
+		for i := 0; i < 3; i++ {
+			_, _, small := genCorpus(t, 4, 4000) // 16K events
 			start := time.Now()
-			if err := sc.Scan(context.Background()); err != nil {
+			if err := small.Scan(context.Background()); err != nil {
 				t.Fatal(err)
 			}
-			d := time.Since(start)
-			if best == 0 || d < best {
-				best = d
+			if d := time.Since(start); one == 0 || d < one {
+				one = d
+			}
+			_, _, large := genCorpus(t, 8, 4000) // 32K events
+			start = time.Now()
+			if err := large.Scan(context.Background()); err != nil {
+				t.Fatal(err)
+			}
+			if d := time.Since(start); two == 0 || d < two {
+				two = d
 			}
 		}
-		return best
+		return one, two
 	}
-	one := measure(4, 4000) // 16K events
-	two := measure(8, 4000) // 32K events
-	t.Logf("fresh scan 16K events=%v, 32K events=%v (%.2fx)", one, two, float64(two)/float64(one))
-	// A quadratic pipeline would be ~4x; allow generous slack for a loaded
-	// machine while still catching superlinear behaviour.
-	if limit := 3*one + 50*time.Millisecond; two > limit {
-		t.Fatalf("fresh scan is superlinear: 16K=%v, 32K=%v", one, two)
+	check := func(one, two time.Duration) bool {
+		t.Logf("fresh scan 16K events=%v, 32K events=%v (%.2fx)", one, two, float64(two)/float64(one))
+		// A quadratic pipeline would be ~4x; allow generous slack for a loaded
+		// machine while still catching superlinear behaviour.
+		return two <= 3*one+50*time.Millisecond
+	}
+	one, two := measure()
+	if !check(one, two) {
+		// One stalled scan is not a regression. Re-measure from scratch
+		// before failing: a real quadratic pipeline is slow on every round.
+		one, two = measure()
+		if !check(one, two) {
+			t.Fatalf("fresh scan is superlinear: 16K=%v, 32K=%v", one, two)
+		}
 	}
 }
 
