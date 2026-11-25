@@ -8,7 +8,7 @@ require (
 	github.com/klauspost/compress v1.20.4
 	github.com/pelletier/go-toml/v2 v2.4.3
 	golang.org/x/sys v0.50.0
-	modernc.org/sqlite v1.62.0
+	modernc.org/sqlite v1.63.0
 )
 
 require (
